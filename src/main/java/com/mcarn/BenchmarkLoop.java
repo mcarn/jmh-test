@@ -1,5 +1,7 @@
 package com.mcarn;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Measurement;
@@ -16,22 +18,24 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)
-@Warmup(iterations = 3)        // Warmup Iteration = 3
-@Measurement(iterations = 8)    // Iteration = 8
+@Warmup(iterations = 3)
+@Measurement(iterations = 5)
 public class BenchmarkLoop {
 
-    @Param({"100", "1000", "10000", "100000", "1000000"})
+    // @Param({"100", "1000", "10000", "100000", "1000000"})
+    @Param({"100", "1000"})
     private int N;
 
-    private List<String> DATA_FOR_TESTING;
+    private List<String> l1;
+    private List<String> l2;
 
     public static void main(String[] args) throws RunnerException {
 
@@ -45,48 +49,32 @@ public class BenchmarkLoop {
 
     @Setup
     public void setup() {
-        DATA_FOR_TESTING = createData();
+        l1 = createData();
+        l2 = createData();
     }
 
     @Benchmark
-    public void loopFor(Blackhole bh) {
-        for (int i = 0; i < DATA_FOR_TESTING.size(); i++) {
-            String s = DATA_FOR_TESTING.get(i); //take out n consume, fair with foreach
-            bh.consume(s);
-        }
+    public void stream(Blackhole bh) {
+        var toAdd = l1.stream().filter(f -> !l2.contains(f)).collect(Collectors.toList());
+        var toRemove = l2.stream().filter(f -> !l1.contains(f)).collect(Collectors.toList());
+
+        bh.consume(toAdd);
+        bh.consume(toRemove);
     }
 
     @Benchmark
-    public void loopWhile(Blackhole bh) {
-        int i = 0;
-        while (i < DATA_FOR_TESTING.size()) {
-            String s = DATA_FOR_TESTING.get(i);
-            bh.consume(s);
-            i++;
-        }
-    }
+    public void collections(Blackhole bh) {
+        var toAdd = CollectionUtils.subtract(l1, l2);
+        var toRemove = CollectionUtils.subtract(l2, l1);
 
-    @Benchmark
-    public void loopForEach(Blackhole bh) {
-        for (String s : DATA_FOR_TESTING) {
-            bh.consume(s);
-        }
-    }
-
-    @Benchmark
-    public void loopIterator(Blackhole bh) {
-        Iterator<String> iterator = DATA_FOR_TESTING.iterator();
-        while (iterator.hasNext()) {
-            String s = iterator.next();
-            bh.consume(s);
-        }
+        bh.consume(toAdd);
+        bh.consume(toRemove);
     }
 
     private List<String> createData() {
-        List<String> data = new ArrayList<>();
-        for (int i = 0; i < N; i++) {
-            data.add("Number : " + i);
-        }
-        return data;
+
+        return IntStream.range(0, N)
+                .mapToObj(i -> RandomStringUtils.randomAlphabetic(6))
+                .collect(Collectors.toList());
     }
 }
