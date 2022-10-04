@@ -35,7 +35,7 @@ public class BenchmarkLoopTest {
     @Param({"100", "500"})
     private int iter;
 
-    @Param({"2", "4", "6", "8"})
+    @Param({"8"})
     private int n;
 
     private List<String> l1;
