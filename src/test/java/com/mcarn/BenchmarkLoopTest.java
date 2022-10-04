@@ -1,6 +1,6 @@
 package com.mcarn;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -23,16 +23,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)
-@Warmup(iterations = 3)
-@Measurement(iterations = 5)
-public class BenchmarkLoop {
+@Warmup(iterations = 2)
+@Measurement(iterations = 3)
+public class BenchmarkLoopTest {
 
-    // @Param({"100", "1000", "10000", "100000", "1000000"})
-    @Param({"100", "1000"})
-    private int N;
+    // @Param({"100", "500", "1000", "5000", "10000"})
+    @Param({"100", "500"})
+    private int iter;
+
+    @Param({"2", "4", "6", "8"})
+    private int n;
 
     private List<String> l1;
     private List<String> l2;
@@ -40,7 +44,7 @@ public class BenchmarkLoop {
     public static void main(String[] args) throws RunnerException {
 
         Options opt = new OptionsBuilder()
-                .include(BenchmarkLoop.class.getSimpleName())
+                .include(BenchmarkLoopTest.class.getSimpleName())
                 .forks(1)
                 .build();
 
@@ -64,17 +68,17 @@ public class BenchmarkLoop {
 
     @Benchmark
     public void collections(Blackhole bh) {
-        var toAdd = CollectionUtils.subtract(l1, l2);
-        var toRemove = CollectionUtils.subtract(l2, l1);
+        var toAdd = ListUtils.subtract(l1, l2);
+        var toRemove = ListUtils.subtract(l2, l1);
 
         bh.consume(toAdd);
         bh.consume(toRemove);
     }
 
     private List<String> createData() {
-
-        return IntStream.range(0, N)
-                .mapToObj(i -> RandomStringUtils.randomAlphabetic(6))
+        return IntStream.range(0, iter)
+                .mapToObj(i -> RandomStringUtils.randomAlphabetic(n))
+                .distinct()
                 .collect(Collectors.toList());
     }
 }
