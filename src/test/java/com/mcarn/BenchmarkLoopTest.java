@@ -1,6 +1,5 @@
 package com.mcarn;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -18,6 +17,7 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -31,8 +31,7 @@ import java.util.stream.IntStream;
 @Measurement(iterations = 3)
 public class BenchmarkLoopTest {
 
-    // @Param({"100", "500", "1000", "5000", "10000"})
-    @Param({"100", "500"})
+    @Param({"100", "500", "1000", "5000", "10000", "50000", "100000"})
     private int iter;
 
     @Param({"8"})
@@ -58,7 +57,7 @@ public class BenchmarkLoopTest {
     }
 
     @Benchmark
-    public void stream(Blackhole bh) {
+    public void not(Blackhole bh) {
         var toAdd = l1.stream().filter(f -> !l2.contains(f)).collect(Collectors.toList());
         var toRemove = l2.stream().filter(f -> !l1.contains(f)).collect(Collectors.toList());
 
@@ -67,9 +66,12 @@ public class BenchmarkLoopTest {
     }
 
     @Benchmark
-    public void collections(Blackhole bh) {
-        var toAdd = ListUtils.subtract(l1, l2);
-        var toRemove = ListUtils.subtract(l2, l1);
+    public void set(Blackhole bh) {
+        var s1 = new HashSet<>(l1);
+        var s2 = new HashSet<>(l2);
+
+        var toAdd = l1.stream().filter(f -> !s2.contains(f)).collect(Collectors.toList());
+        var toRemove = l2.stream().filter(f -> !s1.contains(f)).collect(Collectors.toList());
 
         bh.consume(toAdd);
         bh.consume(toRemove);

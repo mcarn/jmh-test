@@ -7,7 +7,7 @@ $ java -jar target/benchmarks.jar BenchmarkLoop
 ```
 
 ```shell
-$ mvn jmh:benchmark
+$ mvn clean install -DskipTest jmh:benchmark
 ```
 
 ```shell
