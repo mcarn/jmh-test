@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name | quote }}
+  name: {{ .Release.Name }}
 spec:
   template:
     spec:
