@@ -1,6 +1,6 @@
 dependencies:
-- name: helm-common
+- name: dependency-chart
   repository: file://../helm-common
   version: 0.1.0
-digest: sha256:7824d2c00230175405945ccbea66321c9b4fc0f75bd8e37e875a25e6315a23c0
-generated: "2022-10-08T19:16:53.302621+01:00"
+digest: sha256:01b438e2d65093813c1e02b63114d1ecb1846aa1c7dad516ccc938fd9db52ed2
+generated: "2022-10-09T10:40:28.2378133+01:00"
