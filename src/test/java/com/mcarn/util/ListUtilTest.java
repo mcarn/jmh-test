@@ -1,4 +1,4 @@
-package com.mcarn;
+package com.mcarn.util;
 
 import com.mcarn.helper.Timer;
 import org.junit.jupiter.api.BeforeAll;

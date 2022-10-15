@@ -1,4 +1,4 @@
-package com.mcarn;
+package com.mcarn.util;
 
 import java.util.Collection;
 import java.util.HashSet;
