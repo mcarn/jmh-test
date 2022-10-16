@@ -46,7 +46,7 @@ class ListUtilTest {
 
     assertThat(elapsed)
         .isNotZero()
-        .isLessThan(100);
+        .isGreaterThan(100);
   }
 
   @Test
