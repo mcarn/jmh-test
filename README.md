@@ -1,5 +1,5 @@
 ```shell
-$ mvn clean install
+$ mvn clean verify
 ```
 
 ```shell
@@ -7,7 +7,7 @@ $ java -jar target/benchmarks.jar BenchmarkLoop
 ```
 
 ```shell
-$ mvn clean install -DskipTest jmh:benchmark
+$ mvn clean install -Dmaven.test.skip jmh:benchmark
 ```
 
 ```shell
